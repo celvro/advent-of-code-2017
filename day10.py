@@ -1,19 +1,38 @@
-# input = open('10.txt', 'r').read().split()
-inp = [31, 2, 85, 1, 80, 109, 35, 63, 98, 255, 0, 13, 105, 254, 128, 33]
-arr = range(0, 256)
-curr_pos = 0
-skip_size = 0
+original_inp = '31,2,85,1,80,109,35,63,98,255,0,13,105,254,128,33'
+suffix = [17, 31, 73, 47, 23]
 
-for length in inp:
-    end = (length + curr_pos - 1) % len(arr)
-    if end < curr_pos:
-        tmp = arr[curr_pos:] + arr[:end + 1]
-    else:
-        tmp = arr[curr_pos:end + 1]
-    tmp = tmp[::-1]
-    for i in range(0, length):
-        j = (curr_pos + i) % len(arr)
-        arr[j] = tmp[i]
-    curr_pos = (curr_pos + length + skip_size) % len(arr)
-    skip_size += 1
-print 'part 1:', arr[0] * arr[1]
+
+def _hash(lengths, arr, pos, skip):
+    for length in lengths:
+        end = (length + pos - 1) % len(arr)
+        if end < pos:
+            tmp = arr[pos:] + arr[:end + 1]
+        else:
+            tmp = arr[pos:end + 1]
+        tmp = tmp[::-1]
+        for i in xrange(0, length):
+            j = (pos + i) % len(arr)
+            arr[j] = tmp[i]
+        pos = (pos + length + skip) % len(arr)
+        skip += 1
+    return arr, pos, skip
+
+
+def knot_hash(s):
+    tmp = range(0, 256)
+    p, skip_s = 0, 0
+    len_arr = map(ord, s) + suffix
+    for i in xrange(0, 64):
+        tmp, p, skip_s = _hash(len_arr, tmp, p, skip_s)
+    result = []
+    # get tuples in groups of 16
+    for x in zip(*[iter(tmp)] * 16):
+        # reduce gives the decimal result of xor, for string conversion consult
+        # https://docs.python.org/2.4/lib/typesseq-strings.html
+        result.append('%02x' % reduce(lambda a, b: a ^ b, x, 0))
+    return ''.join(result)
+
+
+arr1, _, _ = _hash(map(int, original_inp.split(',')), range(0, 256), 0, 0)
+print 'part 1:', arr1[0] * arr1[1]
+print 'part 2:', knot_hash(original_inp)
