@@ -1,5 +1,6 @@
 from math import sqrt
 from day10 import knot_hash
+from timeit import default_timer()
 
 
 def add_neighbors(index, group, global_checked, arr):
@@ -20,7 +21,7 @@ def add_neighbors(index, group, global_checked, arr):
 
     if up > 0 and up not in global_checked:
         group, global_checked = recursive_add(up, group, global_checked)
-    if index % length != length - 1:
+    if index % length != length - 1 and right not in global_checked:
         group, global_checked = recursive_add(right, group, global_checked)
     if down < length * length and down not in global_checked:
         group, global_checked = recursive_add(down, group, global_checked)
