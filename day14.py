@@ -1,6 +1,5 @@
 from math import sqrt
 from day10 import knot_hash
-from timeit import default_timer()
 
 
 def add_neighbors(index, group, global_checked, arr):
